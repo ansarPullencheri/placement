@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PlacementPro</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <style>
+    body { font-family: 'Poppins', sans-serif; overflow-x: hidden; }
+    .navbar { padding: 15px 50px; transition: background 0.3s ease; display: flex; align-items: center; }
+    .navbar.scrolled { background: rgba(255, 255, 255, 0.95); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
+    .navbar-brand { font-size: 24px; font-weight: 700; color: white !important; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); }
+    .navbar.scrolled .navbar-brand { color: #333 !important; text-shadow: none; }
+    
+    /* Centered Navigation */
+    .navbar .collapse { flex-basis: 100% !important; }
+    .navbar-nav { margin: 0 auto !important; }
+    .nav-link { font-weight: 500; color: white !important; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); margin: 0 15px; }
+    .navbar.scrolled .nav-link { color: #333 !important; text-shadow: none; }
+    .nav-link:hover { color: #4CAF50 !important; }
+    
+    /* Login Button Styling - Right Side */
+    .login-btn { 
+      border: 2px solid #4CAF50 !important; 
+      color: white !important; 
+      padding: 8px 20px !important; 
+      border-radius: 5px !important; 
+      font-weight: 600 !important;
+      text-shadow: none !important;
+      transition: all 0.3s ease !important;
+      background: transparent !important;
+      margin: 0 0 0 auto !important;
+      display: block !important;
+      position: absolute;
+      right: 50px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .login-btn:hover { 
+      background: #4CAF50 !important; 
+      color: white !important;
+    }
+    .navbar.scrolled .login-btn { 
+      border-color: #4CAF50 !important; 
+      color: #4CAF50 !important; 
+    }
+    .navbar.scrolled .login-btn:hover { 
+      background: #4CAF50 !important; 
+      color: white !important;
+    }
+
+    .hero-section { height: 100vh; background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1600&h=900&fit=crop'); background-size: cover; background-position: center; background-attachment: fixed; display: flex; align-items: center; justify-content: center; text-align: center; color: white; }
+    .hero-content { max-width: 800px; padding: 20px; }
+    .hero-content h1 { font-size: 56px; margin-bottom: 20px; font-weight: 700; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); }
+    .hero-content p { font-size: 20px; margin-bottom: 30px; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); }
+    .cta-button { display: inline-block; padding: 15px 40px; background: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-size: 18px; font-weight: 600; transition: background 0.3s, transform 0.3s; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4); }
+    .cta-button:hover { background: #45a049; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(76, 175, 80, 0.6); }
+    .dropdown-menu { background: #fff; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .dropdown-menu a { color: #333 !important; font-weight: 500; }
+    .dropdown-menu a:hover { background-color: #4CAF50; color: white !important; }
+    .navbar-toggler { border: none !important; outline: none !important; box-shadow: none !important; padding: 8px 12px; background-color: transparent !important; margin-left: 0; position: relative; z-index: 1050; }
+    .navbar-toggler:focus { box-shadow: none !important; }
+    .navbar-toggler-icon { background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='white' stroke-width='3' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E"); width: 28px; height: 28px; }
+    .navbar.scrolled .navbar-toggler-icon { background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%23333' stroke-width='3' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E"); }
+    .sidebar-menu { position: fixed; top: 0; left: -300px; width: 300px; height: 100vh; background: rgba(0, 0, 0, 0.95); transition: left 0.3s ease; z-index: 1040; padding: 80px 30px 30px; overflow-y: auto; }
+    .sidebar-menu.show { left: 0; }
+    .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; z-index: 1030; }
+    .sidebar-overlay.show { opacity: 1; visibility: visible; }
+    .sidebar-menu .nav-link { color: white !important; text-shadow: none; margin: 0; padding: 15px 0; font-size: 18px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); display: block; }
+    .sidebar-menu .nav-link:hover { color: #4CAF50 !important; padding-left: 10px; }
+    .sidebar-menu .dropdown-menu { background: transparent; border: none; box-shadow: none; padding-left: 20px; position: static !important; transform: none !important; }
+    .sidebar-menu .dropdown-item { color: rgba(255, 255, 255, 0.8) !important; padding: 10px 0; font-size: 16px; background: transparent !important; }
+    .sidebar-menu .dropdown-item:hover { color: #4CAF50 !important; padding-left: 10px; }
+    
+    /* Mobile Login Button */
+    .sidebar-menu .login-btn {
+      border: 2px solid #4CAF50 !important;
+      color: white !important;
+      padding: 10px 20px !important;
+      margin: 15px 0 !important;
+      display: inline-block !important;
+      position: static !important;
+      right: auto !important;
+      top: auto !important;
+      transform: none !important;
+    }
+    .sidebar-menu .login-btn:hover {
+      background: #4CAF50 !important;
+    }
+
+    .close-sidebar { position: absolute; top: 20px; right: 20px; background: transparent; border: none; color: white; font-size: 30px; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; transition: transform 0.3s ease; }
+    .close-sidebar:hover { transform: rotate(90deg); color: #4CAF50; }
+    .home { height: 70vh; width: 100%; background-color: #E8F5E9; position: relative; }
+    .home .carousel { height: 100%; width: 100%; }
+    .home .carousel-inner { height: 100%; }
+    .home .carousel-item { height: 100%; }
+    .carousel-content { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 20px; }
+    .carousel-content h2 { font-size: 42px; font-weight: 700; color: #2E7D32; margin-bottom: 20px; animation: fadeInUp 0.8s ease; }
+    .carousel-content p { font-size: 20px; color: #555; max-width: 700px; animation: fadeInUp 1s ease; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .carousel-control-prev, .carousel-control-next { width: 45px; height: 45px; top: 50%; transform: translateY(-50%); opacity: 1; }
+    .carousel-control-prev { left: 30px; }
+    .carousel-control-next { right: 30px; }
+    .carousel-control-prev-icon, .carousel-control-next-icon { background-color: transparent; border: 2px solid #4CAF50; border-radius: 50%; width: 45px; height: 45px; background-size: 20px; transition: all 0.3s ease; background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%234CAF50' viewBox='0 0 16 16'%3E%3Cpath d='M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z'/%3E%3C/svg%3E"); }
+    .carousel-control-next-icon { background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%234CAF50' viewBox='0 0 16 16'%3E%3Cpath d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E"); }
+    .carousel-control-prev-icon:hover, .carousel-control-next-icon:hover { border-color: #2E7D32; background-color: rgba(76, 175, 80, 0.1); transform: scale(1.1); }
+    .carousel-indicators { bottom: 20px; margin-bottom: 0; z-index: 10; }
+    .carousel-indicators [data-bs-target] { width: 12px; height: 12px; border-radius: 50%; background-color: rgba(76, 175, 80, 0.5); border: none; margin: 0 5px; transition: all 0.3s ease; }
+    .carousel-indicators .active { background-color: #4CAF50; width: 14px; height: 14px; }
+    .about-section { padding: 80px 0; background-color: #ffffff; }
+    .about-image { width: 100%; height: 500px; object-fit: cover; border-radius: 10px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); }
+    .about-content { height: 500px; display: flex; flex-direction: column; justify-content: center; }
+    .about-content p { font-size: 16px; line-height: 1.7; color: #555; margin-bottom: 15px; }
+    .about-features { margin-top: 20px; }
+    .feature-item { display: flex; align-items: start; margin-bottom: 15px; }
+    .feature-icon { width: 40px; height: 40px; background: #4CAF50; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: bold; margin-right: 15px; flex-shrink: 0; }
+    .feature-text h4 { font-size: 18px; font-weight: 600; color: #333; margin-bottom: 5px; }
+    .feature-text p { font-size: 14px; color: #666; margin: 0; }
+    .services { background-color: #F9FBE7; overflow: hidden; padding: 50px 0; }
+    .services-scroll-wrapper { overflow: hidden; margin-bottom: 30px; position: relative; }
+    .services-scroll-container { display: flex; gap: 30px; animation: autoScroll 40s linear infinite; width: fit-content; }
+    .services-scroll-container:hover { animation-play-state: paused; }
+    @keyframes autoScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    .service-scroll-item { flex: 0 0 auto; width: 450px; }
+    .service-box { background-color: #fff; transition: all 0.3s ease; border: 1px solid rgba(76, 175, 80, 0.1); min-height: 280px; display: flex; flex-direction: column; justify-content: center; padding: 35px 25px; border-radius: 16px; }
+    .service-box:hover { transform: translateY(-8px); box-shadow: 0 8px 25px rgba(76, 175, 80, 0.2); border-color: #4CAF50; }
+    .service-icon i { transition: transform 0.3s ease; }
+    .service-box:hover .service-icon i { transform: scale(1.1); }
+    .line-scroll { position: relative; display: flex; align-items: center; justify-content: center; margin-top: 30px; }
+    .line-scroll .line { width: 70%; height: 1px; background-color: #4CAF50; position: relative; }
+    .scroll-btn { background-color: white; border: 2px solid #4CAF50; color: #4CAF50; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 15px; font-size: 22px; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(76, 175, 80, 0.15); cursor: pointer; }
+    .scroll-btn:hover { background-color: #4CAF50; color: white; transform: scale(1.1); box-shadow: 0 6px 15px rgba(76, 175, 80, 0.3); }
+    .scroll-btn:active { transform: scale(0.95); }
+
+    @media (min-width: 992px) {
+      .sidebar-menu, .sidebar-overlay, .navbar-toggler { display: none; }
+      .hero-content { margin-top: 80px; }
+      .services { padding: 40px 0; }
+      .services .container { padding-top: 20px !important; padding-bottom: 20px !important; }
+      .services h2 { font-size: 2.2rem !important; margin-bottom: 30px !important; }
+      .service-box { min-height: 260px; padding: 30px 25px; }
+      .service-icon i { font-size: 36px !important; }
+      .service-box h4 { font-size: 1.05rem; margin-bottom: 10px; }
+      .service-box p { font-size: 15px; line-height: 1.5; }
+      .line-scroll { margin-top: 25px; }
+    }
+
+    @media (max-width: 991px) {
+      .navbar { padding: 15px 20px; }
+      .container-fluid { padding-left: 0; padding-right: 15px; }
+      .navbar-collapse { display: none !important; }
+      .hero-content h1 { font-size: 36px; }
+      .hero-content p { font-size: 16px; }
+      .login-btn { position: static !important; right: auto !important; transform: none !important; margin: 15px 0 !important; }
+    }
+
+    @media (max-width: 1200px) {
+      .service-scroll-item { width: 380px; }
+      .service-box { padding: 35px 25px; min-height: 300px; }
+      .service-box h4 { font-size: 1.1rem; }
+      .service-box p { font-size: 15px; }
+    }
+
+    @media (max-width: 992px) {
+      .service-scroll-item { width: 350px; }
+      .service-box { padding: 30px 20px; min-height: 280px; }
+      .line-scroll .line { width: 65%; }
+    }
+
+    @media (max-width: 768px) {
+      .carousel-content h2 { font-size: 28px; }
+      .carousel-content p { font-size: 16px; }
+      .carousel-control-prev, .carousel-control-next { width: 40px; height: 40px; }
+      .carousel-control-prev { left: 10px; }
+      .carousel-control-next { right: 10px; }
+      .carousel-control-prev-icon, .carousel-control-next-icon { width: 40px; height: 40px; background-size: 20px; border-width: 2px; }
+      .carousel-indicators [data-bs-target] { width: 10px; height: 10px; }
+      .carousel-indicators .active { width: 12px; height: 12px; }
+      .about-section { padding: 50px 0; }
+      .about-content { height: auto; }
+      .about-image { height: 300px; margin-bottom: 30px; }
+      .services { padding: 50px 0; }
+      .services h2 { font-size: 2rem !important; margin-bottom: 2rem !important; }
+      .service-scroll-item { width: 300px; }
+      .service-box { padding: 25px 20px; min-height: 260px; }
+      .service-box h4 { font-size: 1rem; }
+      .service-box p { font-size: 14px; }
+      .service-icon i { font-size: 35px !important; }
+      .scroll-btn { width: 38px; height: 38px; font-size: 18px; margin: 0 10px; }
+      .line-scroll .line { width: 55%; }
+    }
+
+    @media (max-width: 576px) {
+      .services { padding: 40px 0; }
+      .services h2 { font-size: 1.75rem !important; margin-bottom: 1.5rem !important; }
+      .services-scroll-container { gap: 20px; }
+      .service-scroll-item { width: 280px; }
+      .service-box { padding: 20px 15px; min-height: 240px; border-radius: 12px; }
+      .service-box h4 { font-size: 0.95rem; margin-bottom: 8px; }
+      .service-box p { font-size: 13px; line-height: 1.5; }
+      .service-icon { margin-bottom: 10px !important; }
+      .service-icon i { font-size: 32px !important; }
+      .scroll-btn { width: 35px; height: 35px; font-size: 16px; margin: 0 8px; }
+      .line-scroll { margin-top: 30px; }
+      .line-scroll .line { width: 50%; }
+    }
+
+    @media (max-width: 400px) {
+      .service-scroll-item { width: 260px; }
+      .service-box { padding: 18px 12px; min-height: 220px; }
+      .service-box h4 { font-size: 0.9rem; }
+      .service-box p { font-size: 12px; }
+      .service-icon i { font-size: 30px !important; }
+      .scroll-btn { width: 32px; height: 32px; font-size: 14px; margin: 0 6px; }
+      .line-scroll .line { width: 45%; }
+    }
+
+    .contact-section {
+      min-height: 100vh;
+      background-image: linear-gradient(rgba(46, 125, 50, 0.65), rgba(27, 94, 32, 0.7)), 
+                        url('https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=1600&h=900&fit=crop');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      padding: 80px 0;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .contact-container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .contact-header {
+      text-align: center;
+      margin-bottom: 50px;
+      color: white;
+    }
+
+    .contact-header h2 {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .contact-header p {
+      font-size: 1.2rem;
+      opacity: 0.95;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .contact-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+
+    .contact-info {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .contact-info h3 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #2E7D32;
+      margin-bottom: 25px;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: start;
+      margin-bottom: 25px;
+      padding: 15px;
+      background: #F1F8E9;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .info-item:hover {
+      transform: translateX(10px);
+      background: #E8F5E9;
+      box-shadow: 0 5px 15px rgba(76, 175, 80, 0.2);
+    }
+
+    .info-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #4CAF50, #2E7D32);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      margin-right: 20px;
+      flex-shrink: 0;
+    }
+
+    .info-text h4 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #2E7D32;
+      margin-bottom: 5px;
+    }
+
+    .info-text p {
+      font-size: 0.95rem;
+      color: #555;
+      margin: 0;
+    }
+
+    .contact-form {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .contact-form h3 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #2E7D32;
+      margin-bottom: 25px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 18px;
+      border: 2px solid #E0E0E0;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.3s ease;
+      background: white;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #4CAF50;
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #4CAF50, #2E7D32);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+      justify-content: center;
+    }
+
+    .social-icon {
+      width: 45px;
+      height: 45px;
+      background: linear-gradient(135deg, #4CAF50, #2E7D32);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .social-icon:hover {
+      transform: translateY(-5px) scale(1.1);
+      box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
+    }
+
+    @media (max-width: 992px) {
+      .contact-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+
+      .contact-header h2 {
+        font-size: 2.5rem;
+      }
+
+      .contact-section {
+        padding: 60px 0;
+        background-attachment: scroll;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .contact-header h2 {
+        font-size: 2rem;
+      }
+
+      .contact-header p {
+        font-size: 1rem;
+      }
+
+      .contact-info, .contact-form {
+        padding: 30px 25px;
+      }
+
+      .info-item {
+        padding: 12px;
+      }
+
+      .info-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 20px;
+        margin-right: 15px;
+      }
+
+      .contact-section {
+        padding: 50px 0;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .contact-header h2 {
+        font-size: 1.75rem;
+      }
+
+      .contact-info, .contact-form {
+        padding: 25px 20px;
+      }
+
+      .contact-info h3, .contact-form h3 {
+        font-size: 1.5rem;
+      }
+
+      .form-control {
+        padding: 10px 15px;
+      }
+
+      .submit-btn {
+        padding: 12px;
+        font-size: 1rem;
+      }
+    }
+
+    .footer {
+      background: linear-gradient(135deg, #212121, #37474F);
+      color: white;
+      padding: 60px 0 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+
+    .footer-section h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #A5D6A7;
+    }
+
+    .footer-section p {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      opacity: 0.9;
+      margin-bottom: 15px;
+    }
+
+    .footer-links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .footer-links li {
+      margin-bottom: 12px;
+    }
+
+    .footer-links a {
+      color: rgba(255, 255, 255, 0.85);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+
+    .footer-links a:hover {
+      color: #A5D6A7;
+      padding-left: 8px;
+    }
+
+    .footer-social {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .footer-social a {
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .footer-social a:hover {
+      background: #4CAF50;
+      transform: translateY(-3px);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 25px;
+      text-align: center;
+    }
+
+    .footer-bottom p {
+      margin: 0;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .footer-bottom a {
+      color: #A5D6A7;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .footer-bottom a:hover {
+      color: #81C784;
+    }
+
+    @media (max-width: 768px) {
+      .footer {
+        padding: 40px 0 20px;
+      }
+
+      .footer-content {
+        gap: 30px;
+        grid-template-columns: 1fr;
+      }
+
+      .footer-section h3 {
+        font-size: 1.2rem;
+      }
+
+      .footer-section p {
+        font-size: 0.9rem;
+      }
+
+      .footer-links {
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .footer {
+        padding: 30px 0 15px;
+      }
+
+      .footer-content {
+        gap: 25px;
+      }
+
+      .footer-section h3 {
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+      }
+
+      .footer-social {
+        justify-content: center;
+      }
+
+      .footer-bottom p {
+        font-size: 0.85rem;
+        line-height: 1.6;
+      }
+    }
+    
+  </style>
+</head>
+<body>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="sidebar-menu" id="sidebarMenu">
+    <button class="close-sidebar" id="closeSidebar">&times;</button>
+    <ul class="navbar-nav">
+      <li class="nav-item"><a class="nav-link" href="#home">About</a></li>
+      <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="sidebarRegistrationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Registration</a>
+        <ul class="dropdown-menu" aria-labelledby="sidebarRegistrationDropdown">
+          <li><a class="dropdown-item" href="#student">Student Registration</a></li>
+          <li><a class="dropdown-item" href="#company">Company Registration</a></li>
+          <li><a class="dropdown-item" href="#admin">Admin Registration</a></li>
+        </ul>
+      </li>
+      <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+      <li class="nav-item">
+        <a class="nav-link login-btn" href="">Login</a>
+      </li>
+    </ul>
+  </div>
+
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+      <button class="navbar-toggler" type="button" id="toggleSidebar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link" href="#home">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="registrationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Registration</a>
+            <ul class="dropdown-menu" aria-labelledby="registrationDropdown">
+              <li><a class="dropdown-item" href="{% url "web:candidate" %}">Student Registration</a></li>
+              <li><a class="dropdown-item" href="{% url "web:index" %}">Company Registration</a></li>
+            </ul>
+          </li>
+          <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+        </ul>
+        <a class="nav-link login-btn" href="{% url 'web:login' %}">Login</a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1>Find Your Dream Career</h1>
+      <p>Connecting talented professionals with leading companies worldwide. Your next opportunity starts here.</p>
+      <a href="#contact" class="cta-button">Contact</a>
+    </div>
+  </section>
+
+  <section class="home" id="home">
+    <div id="homeCarousel" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-indicators">
+        <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+      </div>
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <div class="carousel-content">
+            <h2>Connect with Top Companies</h2>
+            <p>Get direct access to leading employers looking for talented professionals like you</p>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="carousel-content">
+            <h2>Build Your Professional Profile</h2>
+            <p>Showcase your skills, experience, and achievements to stand out from the crowd</p>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="carousel-content">
+            <h2>Career Guidance & Support</h2>
+            <p>Expert advice and resources to help you navigate your career journey successfully</p>
+          </div>
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#homeCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#homeCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="about-section" id="about">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+          <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=600&fit=crop" alt="About PlacementPro" class="about-image">
+        </div>
+        <div class="col-lg-6">
+          <div class="about-content">
+            <h2 style="color:#2E7D32; font-weight:700; font-size:2.3rem">About PlacementPro</h2>
+            <p>We are dedicated to bridging the gap between talented professionals and leading companies worldwide. With years of experience in recruitment and career development, we understand what it takes to build successful careers.</p>
+            <p>Our platform provides a seamless connection between job seekers and employers, ensuring the right match for both parties. We believe in empowering individuals to achieve their career goals while helping companies find the perfect talent.</p>
+            <div class="about-features">
+              <div class="feature-item">
+                <div class="feature-icon">✓</div>
+                <div class="feature-text">
+                  <h4>Expert Guidance</h4>
+                  <p>Professional career counseling and support throughout your journey</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-icon">✓</div>
+                <div class="feature-text">
+                  <h4>Top Companies</h4>
+                  <p>Access to leading employers across various industries</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-icon">✓</div>
+                <div class="feature-text">
+                  <h4>Success Rate</h4>
+                  <p>Proven track record of successful placements and satisfied clients</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="services" id="services">
+    <div class="container py-4">
+      <h2 class="text-center mb-4" style="color:#2E7D32; font-weight:700; font-size:2.5rem;">Our Services</h2>
+      <div class="services-scroll-wrapper">
+        <div class="services-scroll-container" id="servicesContainer">
+          <div class="service-scroll-item">
+            <div class="service-box p-4 text-center shadow-sm h-100">
+              <div class="service-icon mb-3">
+                <i class="bi bi-briefcase-fill" style="font-size: 40px; color:#4CAF50;"></i>
+              </div>
+              <h4 style="color:#2E7D32; font-weight:600;">Job Placement Assistance</h4>
+              <p style="color:#555; font-size:16px; line-height:1.6;">We connect job seekers with top companies, providing guidance and support throughout the recruitment process to help you land your dream job.</p>
+            </div>
+          </div>
+          <div class="service-scroll-item">
+            <div class="service-box p-4 text-center shadow-sm h-100">
+              <div class="service-icon mb-3">
+                <i class="bi bi-people-fill" style="font-size: 40px; color:#4CAF50;"></i>
+              </div>
+              <h4 style="color:#2E7D32; font-weight:600;">Career Development Programs</h4>
+              <p style="color:#555; font-size:16px; line-height:1.6;">We offer training sessions, resume building, and interview preparation to enhance your skills and confidence for a successful career journey.</p>
+            </div>
+          </div>
+          <div class="service-scroll-item">
+            <div class="service-box p-4 text-center shadow-sm h-100">
+              <div class="service-icon mb-3">
+                <i class="bi bi-building" style="font-size: 40px; color:#4CAF50;"></i>
+              </div>
+              <h4 style="color:#2E7D32; font-weight:600;">Corporate Recruitment Solutions</h4>
+              <p style="color:#555; font-size:16px; line-height:1.6;">Helping businesses find the right talent through our extensive network and streamlined recruitment process for lasting success.</p>
+            </div>
+          </div>
+          <div class="service-scroll-item">
+            <div class="service-box p-4 text-center shadow-sm h-100">
+              <div class="service-icon mb-3">
+                <i class="bi bi-graph-up-arrow" style="font-size: 40px; color:#4CAF50;"></i>
+              </div>
+              <h4 style="color:#2E7D32; font-weight:600;">Skill Enhancement Workshops</h4>
+              <p style="color:#555; font-size:16px; line-height:1.6;">Interactive workshops designed to upgrade your technical and soft skills, keeping you competitive in today's dynamic job market.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="line-scroll">
+        <button class="scroll-btn left-btn" id="scrollLeftBtn">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        <div class="line"></div>
+        <button class="scroll-btn right-btn" id="scrollRightBtn">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact-section" id="contact">
+    <div class="contact-container">
+      <div class="contact-header">
+        <h2>Get In Touch</h2>
+        <p>Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+      </div>
+
+      <div class="contact-content">
+        <div class="contact-info">
+          <h3>Contact Information</h3>
+          
+          <div class="info-item">
+            <div class="info-icon">
+              <i class="bi bi-geo-alt-fill"></i>
+            </div>
+            <div class="info-text">
+              <h4>Address</h4>
+              <p>123 Business Street, Suite 100<br>New York, NY 10001</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-icon">
+              <i class="bi bi-telephone-fill"></i>
+            </div>
+            <div class="info-text">
+              <h4>Phone</h4>
+              <p>+1 (555) 123-4567<br>Mon-Fri, 9AM-6PM EST</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-icon">
+              <i class="bi bi-envelope-fill"></i>
+            </div>
+            <div class="info-text">
+              <h4>Email</h4>
+              <p>info@placementpro.com<br>support@placementpro.com</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-form">
+          <h3>Send Us a Message</h3>
+          <div class="status-message" id="statusMessage"></div>
+          
+          <form id="contactForm">
+            <div class="form-group">
+              <label for="name">Full Name</label>
+              <input type="text" id="name" name="name" class="form-control" placeholder="John Doe" required>
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" name="email" class="form-control" placeholder="john@example.com" required>
+            </div>
+
+            <div class="form-group">
+              <label for="subject">Subject</label>
+              <input type="text" id="subject" name="subject" class="form-control" placeholder="What is this regarding?" required>
+            </div>
+
+            <div class="form-group">
+              <label for="message">Message</label>
+              <textarea id="message" name="message" class="form-control" placeholder="Tell us how we can help you..." required></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">
+              <i class="bi bi-send-fill me-2"></i>Send Message
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>PlacementPro</h3>
+          <p>Connecting talented professionals with leading companies worldwide. Your career success is our mission.</p>
+          <div class="footer-social">
+            <a href="#" title="Facebook"><i class="bi bi-facebook"></i></a>
+            <a href="#" title="Twitter"><i class="bi bi-twitter"></i></a>
+            <a href="#" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+            <a href="#" title="Instagram"><i class="bi bi-instagram"></i></a>
+          </div>
+        </div>
+
+        <div class="footer-section">
+          <h3>Quick Links</h3>
+          <ul class="footer-links">
+            <li><a href="#home">About Us</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li><a href="#">Career Resources</a></li>
+            <li><a href="#">Blog</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h3>Services</h3>
+          <ul class="footer-links">
+            <li><a href="#">Job Placement</a></li>
+            <li><a href="#">Career Development</a></li>
+            <li><a href="#">Corporate Recruitment</a></li>
+            <li><a href="#">Skill Workshops</a></li>
+            <li><a href="#">Interview Preparation</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h3>Contact Info</h3>
+          <ul class="footer-links">
+            <li><i class="bi bi-geo-alt-fill me-2"></i>123 Business Street, Suite 100</li>
+            <li><i class="bi bi-telephone-fill me-2"></i>+1 (555) 123-4567</li>
+            <li><i class="bi bi-envelope-fill me-2"></i>info@placementpro.com</li>
+            <li><i class="bi bi-clock-fill me-2"></i>Mon-Fri: 9AM - 6PM EST</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2025 PlacementPro. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    window.addEventListener('scroll', function() {
+      const nav = document.querySelector('.navbar');
+      if (window.scrollY > 50) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+    });
+
+    const toggleSidebar = document.getElementById('toggleSidebar');
+    const closeSidebar = document.getElementById('closeSidebar');
+    const sidebarMenu = document.getElementById('sidebarMenu');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    toggleSidebar.addEventListener('click', function() {
+      sidebarMenu.classList.add('show');
+      sidebarOverlay.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    });
+
+    closeSidebar.addEventListener('click', function() {
+      sidebarMenu.classList.remove('show');
+      sidebarOverlay.classList.remove('show');
+      document.body.style.overflow = 'auto';
+    });
+
+    sidebarOverlay.addEventListener('click', function() {
+      sidebarMenu.classList.remove('show');
+      sidebarOverlay.classList.remove('show');
+      document.body.style.overflow = 'auto';
+    });
+
+    const sidebarLinks = document.querySelectorAll('.sidebar-menu .dropdown-item');
+    sidebarLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        sidebarMenu.classList.remove('show');
+        sidebarOverlay.classList.remove('show');
+        document.body.style.overflow = 'auto';
+      });
+    });
+
+    const nonDropdownLinks = document.querySelectorAll('.sidebar-menu .nav-link:not(.dropdown-toggle)');
+    nonDropdownLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        sidebarMenu.classList.remove('show');
+        sidebarOverlay.classList.remove('show');
+        document.body.style.overflow = 'auto';
+      });
+    });
+
+    const servicesContainer = document.getElementById('servicesContainer');
+    const scrollLeftBtn = document.getElementById('scrollLeftBtn');
+    const scrollRightBtn = document.getElementById('scrollRightBtn');
+
+    const items = servicesContainer.innerHTML;
+    servicesContainer.innerHTML += items;
+
+    let scrollPosition = 0;
+    let isScrolling = false;
+
+    scrollLeftBtn.addEventListener('click', function() {
+      if (isScrolling) return;
+      isScrolling = true;
+      
+      servicesContainer.style.animation = 'none';
+      const currentTransform = window.getComputedStyle(servicesContainer).transform;
+      const matrix = new DOMMatrix(currentTransform);
+      const currentX = matrix.m41;
+      
+      servicesContainer.style.transform = `translateX(${currentX}px)`;
+      
+      const scrollAmount = servicesContainer.querySelector('.service-scroll-item').offsetWidth + 30;
+      const newPosition = currentX + scrollAmount;
+      
+      servicesContainer.style.transition = 'transform 0.5s ease';
+      servicesContainer.style.transform = `translateX(${newPosition}px)`;
+      
+      setTimeout(() => {
+        servicesContainer.style.transition = '';
+        servicesContainer.style.transform = '';
+        servicesContainer.style.animation = 'autoScroll 40s linear infinite';
+        isScrolling = false;
+      }, 500);
+    });
+
+    scrollRightBtn.addEventListener('click', function() {
+      if (isScrolling) return;
+      isScrolling = true;
+      
+      servicesContainer.style.animation = 'none';
+      const currentTransform = window.getComputedStyle(servicesContainer).transform;
+      const matrix = new DOMMatrix(currentTransform);
+      const currentX = matrix.m41;
+      
+      servicesContainer.style.transform = `translateX(${currentX}px)`;
+      
+      const scrollAmount = servicesContainer.querySelector('.service-scroll-item').offsetWidth + 30;
+      const newPosition = currentX - scrollAmount;
+      
+      servicesContainer.style.transition = 'transform 0.5s ease';
+      servicesContainer.style.transform = `translateX(${newPosition}px)`;
+      
+      setTimeout(() => {
+        servicesContainer.style.transition = '';
+        servicesContainer.style.transform = '';
+        servicesContainer.style.animation = 'autoScroll 40s linear infinite';
+        isScrolling = false;
+      }, 500);
+    });
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+  </script>
+   
+  <script>
+    // Initialize EmailJS with your PUBLIC KEY
+    (function() {
+      emailjs.init("Oh1gLd4QICu7ozC0t");
+    })();
+
+    const contactForm = document.getElementById('contactForm');
+    const statusMessage = document.getElementById('statusMessage');
+    const submitBtn = document.getElementById('submitBtn');
+
+    contactForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // Show loading state
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Sending...';
+      statusMessage.style.display = 'none';
+
+      // Get form values - MUST match your EmailJS template variables exactly
+      const formData = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        subject: document.getElementById('subject').value,
+        message: document.getElementById('message').value
+      };
+
+      console.log('Attempting to send email with data:', formData);
+
+      // Send email using EmailJS
+      emailjs.send('service_d0i6rq8', 'template_2z3ts03', formData)
+        .then(function(response) {
+          console.log('✓ SUCCESS!', response.status, response.text);
+          
+          // Show success message
+          statusMessage.style.padding = '15px';
+          statusMessage.style.borderRadius = '8px';
+          statusMessage.style.marginBottom = '20px';
+          statusMessage.style.backgroundColor = '#d4edda';
+          statusMessage.style.color = '#155724';
+          statusMessage.style.border = '1px solid #c3e6cb';
+          statusMessage.textContent = '✓ Message sent successfully! We\'ll get back to you soon.';
+          statusMessage.style.display = 'block';
+          
+          // Reset form
+          contactForm.reset();
+          
+          // Reset button
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="bi bi-send-fill me-2"></i>Send Message';
+          
+          // Hide success message after 5 seconds
+          setTimeout(() => {
+            statusMessage.style.display = 'none';
+          }, 5000);
+        }, function(error) {
+          console.error('✗ FAILED...', error);
+          console.error('Error details:', JSON.stringify(error, null, 2));
+          
+          // Show detailed error message
+          statusMessage.style.padding = '15px';
+          statusMessage.style.borderRadius = '8px';
+          statusMessage.style.marginBottom = '20px';
+          statusMessage.style.backgroundColor = '#f8d7da';
+          statusMessage.style.color = '#721c24';
+          statusMessage.style.border = '1px solid #f5c6cb';
+          statusMessage.textContent = `✗ Failed to send message. Error: ${error.text || 'Unknown error'}. Please try again or contact us directly.`;
+          statusMessage.style.display = 'block';
+          
+          // Reset button
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="bi bi-send-fill me-2"></i>Send Message';
+        });
+    });
+  </script>
+
+</body>
+</html>
