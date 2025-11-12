@@ -28,6 +28,9 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+CORS_ALLOWED_ORIGINS = [
+    'https://placement-uyg9.onrender.com',
+]
 ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = ['https://placement-uyg9.onrender.com']
 
