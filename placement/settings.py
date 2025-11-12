@@ -76,12 +76,15 @@ WSGI_APPLICATION = 'placement.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+db_name = os.getenv("DATABASE_NAME")
+
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv('DATABASE_ENGINE'),
-        'NAME': BASE_DIR / os.getenv('DATABASE_NAME'),
+        'ENGINE': os.getenv("DATABASE_ENGINE"),
+        'NAME': BASE_DIR / db_name if db_name else BASE_DIR / 'db.sqlite3',
     }
 }
+
 
 
 # Password validation
