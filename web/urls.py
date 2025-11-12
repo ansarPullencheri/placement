@@ -17,4 +17,5 @@ urlpatterns = [
     path('submit_company_registration/', views.submit_company_registration, name='submit_company_registration'),
     path('view_companies/', views.view_companies, name='view_companies'),
     path('delete_company/<int:company_id>/', views.delete_company, name='delete_company'),
+    path('update-candidate-status/<int:candidate_id>/', views.update_candidate_status, name='update_candidate_status'),
 ]

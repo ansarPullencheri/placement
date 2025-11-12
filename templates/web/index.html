@@ -437,64 +437,59 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const form = document.getElementById('interviewForm');
-        const successMessage = document.getElementById('successMessage');
+       // Replace the entire <script> section in index.html with this:
 
-        // Set minimum date to today
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('interviewDate').setAttribute('min', today);
+const form = document.getElementById('interviewForm');
+const successMessage = document.getElementById('successMessage');
 
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
+form.addEventListener('submit', function(e) {
+    e.preventDefault();
 
-            // Collect form data
-            const formData = {
-                companyName: document.getElementById('companyName').value,
-                interviewDate: document.getElementById('interviewDate').value,
-                contactPerson: document.getElementById('contactPerson').value,
-                designation: document.getElementById('designation').value,
-                email: document.getElementById('email').value,
-                mobile: document.getElementById('mobile').value,
-                whatsapp: document.getElementById('whatsapp').value,
-                location: document.getElementById('location').value,
-                post: document.getElementById('post').value,
-                vacancies: document.getElementById('vacancies').value,
-                salary: document.getElementById('salary').value
-            };
+    // Collect form data
+    const formData = {
+        companyName: document.getElementById('companyName').value,
+        interviewDate: document.getElementById('interviewDate').value,
+        contactPerson: document.getElementById('contactPerson').value,
+        designation: document.getElementById('designation').value,
+        email: document.getElementById('email').value,
+        mobile: document.getElementById('mobile').value,
+        whatsapp: document.getElementById('whatsapp').value,
+        location: document.getElementById('location').value,
+        post: document.getElementById('post').value,
+        vacancies: document.getElementById('vacancies').value,
+        salary: document.getElementById('salary').value
+    };
 
-            // Log form data to console
-            console.log('Form Data:', formData);
-
+    // Send data to backend - CORRECTED ENDPOINT
+    fetch('/submit_company_registration/', { 
+        method: 'POST', 
+        headers: { 
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData) 
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
             // Show success message
             successMessage.classList.add('show');
-
+            
             // Hide success message after 3 seconds
             setTimeout(() => {
                 successMessage.classList.remove('show');
             }, 3000);
-
+            
             // Reset form
             form.reset();
-
-            // Here you can add code to send data to your backend
-            // Example: fetch('/api/companies/', { 
-            //     method: 'POST', 
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify(formData) 
-            // })
-        });
-
-        // Phone number formatting - remove non-digits
-        const phoneInputs = document.querySelectorAll('input[type="tel"]');
-        phoneInputs.forEach(input => {
-            input.addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\D/g, '');
-                if (value.length > 10) {
-                    value = value.slice(0, 10);
-                }
-                e.target.value = value;
-            });
-        });
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to submit form. Please try again.');
+    });
+});
     </script>
 </body>
 </html>

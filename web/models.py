@@ -48,6 +48,12 @@ class CandidateRegistration(models.Model):
         ('ews', 'EWS'),
     )
     
+    STATUS_CHOICES = (
+        ('pending', 'Pending'),
+        ('selected', 'Selected'),
+        ('rejected', 'Rejected'),
+    )
+    
     name = models.CharField(max_length=200)
     dob = models.DateField()
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
@@ -60,6 +66,7 @@ class CandidateRegistration(models.Model):
     passout_year = models.IntegerField()
     institute = models.CharField(max_length=300)
     experience = models.TextField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):

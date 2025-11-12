@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,6 +18,7 @@
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%);
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         .sidebar {
@@ -28,57 +28,123 @@
             height: 100vh;
             width: 220px;
             background: linear-gradient(135deg, #2E7D32 0%, #4CAF50 100%);
-            padding: 20px 0;
+            padding: 15px 0;
             box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
             z-index: 1000;
             overflow-y: auto;
+            overflow-x: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar.collapsed {
+            width: 70px;
         }
 
         .sidebar-header {
             text-align: center;
-            padding: 20px 15px;
+            padding: 15px;
             color: white;
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.collapsed .sidebar-header h2,
+        .sidebar.collapsed .sidebar-header p {
+            opacity: 0;
+            display: none;
         }
 
         .sidebar-header h2 {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 700;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
+            white-space: nowrap;
         }
 
         .sidebar-header p {
-            font-size: 12px;
+            font-size: 11px;
             opacity: 0.9;
             font-weight: 400;
+            white-space: nowrap;
+        }
+
+        .sidebar-toggle {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 35px;
+            height: 35px;
+            background: white;
+            border: 2px solid #4CAF50;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            z-index: 1001;
+        }
+        
+        .sidebar.collapsed .sidebar-toggle {
+            right: 17px;
+        }
+
+        .sidebar-toggle:hover {
+            background: #4CAF50;
+            transform: scale(1.1);
+        }
+
+        .sidebar-toggle i {
+            color: #4CAF50;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-toggle:hover i {
+            color: white;
+        }
+
+        .sidebar.collapsed .sidebar-toggle i {
+            transform: rotate(0deg);
+        }
+        
+        .sidebar:not(.collapsed) .sidebar-toggle i {
+            transform: rotate(180deg);
         }
 
         .sidebar-menu {
             list-style: none;
-            padding: 0 12px;
+            padding: 0 10px;
         }
 
         .sidebar-menu li {
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .sidebar-menu a {
             display: flex;
             align-items: center;
-            padding: 12px 15px;
+            padding: 10px 12px;
             color: rgba(255, 255, 255, 0.9);
             text-decoration: none;
-            border-radius: 12px;
+            border-radius: 10px;
             transition: all 0.3s ease;
             font-weight: 500;
-            font-size: 14px;
+            font-size: 13px;
+            white-space: nowrap;
+            position: relative;
         }
 
         .sidebar-menu a:hover {
             background: rgba(255, 255, 255, 0.15);
             color: white;
             transform: translateX(5px);
+        }
+
+        .sidebar.collapsed .sidebar-menu a:hover {
+            transform: translateX(0);
         }
 
         .sidebar-menu a.active {
@@ -88,87 +154,288 @@
         }
 
         .sidebar-menu i {
-            font-size: 18px;
-            margin-right: 12px;
-            width: 20px;
+            font-size: 17px;
+            margin-right: 10px;
+            min-width: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.collapsed .sidebar-menu i {
+            margin-right: 0;
+        }
+
+        .sidebar-menu .menu-text {
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.collapsed .sidebar-menu .menu-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed .sidebar-menu a {
+            justify-content: center;
+            padding: 10px 0;
+        }
+
+        .sidebar.collapsed .sidebar-menu a::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 70px;
+            background: #2E7D32;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1002;
+            font-size: 12px;
+        }
+
+        .sidebar.collapsed .sidebar-menu a:hover::after {
+            opacity: 1;
+            left: 80px;
         }
 
         .main-content {
             margin-left: 220px;
-            padding: 25px;
+            padding: 15px;
             min-height: 100vh;
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content.expanded {
+            margin-left: 70px;
         }
 
         .top-bar {
             background: white;
-            padding: 25px 35px;
-            border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            margin-bottom: 30px;
+            padding: 15px 25px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+            margin-bottom: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-shrink: 0;
         }
 
         .top-bar h1 {
-            font-size: 30px;
+            font-size: 24px;
             color: #2E7D32;
             font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .logout-btn {
-            padding: 10px 24px;
+            padding: 8px 20px;
             background: linear-gradient(135deg, #e74c3c, #c0392b);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
-            font-size: 14px;
+            box-shadow: 0 3px 8px rgba(231, 76, 60, 0.3);
+            font-size: 13px;
         }
 
         .logout-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(231, 76, 60, 0.4);
+            box-shadow: 0 5px 12px rgba(231, 76, 60, 0.4);
             color: white;
         }
 
         .content-section {
             background: white;
-            padding: 35px;
-            border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .pagination-wrapper {
+            padding: 15px 0 0 0;
+            border-top: 2px solid #E8F5E9;
+            margin-top: 15px;
+            flex-shrink: 0;
+        }
+
+        .pagination {
+            margin: 0;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .pagination .page-item .page-link {
+            border: 2px solid #E8F5E9;
+            color: #2E7D32;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 0 2px;
+        }
+
+        .pagination .page-item.active .page-link {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            border-color: #4CAF50;
+            color: white;
+            box-shadow: 0 3px 8px rgba(76, 175, 80, 0.3);
+        }
+
+        .pagination .page-item .page-link:hover {
+            background: #E8F5E9;
+            border-color: #4CAF50;
+            color: #2E7D32;
+            transform: translateY(-2px);
+        }
+
+        .pagination .page-item.disabled .page-link {
+            background: #f5f5f5;
+            border-color: #e0e0e0;
+            color: #999;
+        }
+
+        .page-info {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .page-info strong {
+            color: #2E7D32;
         }
 
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
             border-bottom: 2px solid #E8F5E9;
+            flex-shrink: 0;
+            gap: 15px;
         }
 
         .section-header h3 {
-            font-size: 22px;
+            font-size: 18px;
             color: #333;
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .search-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input {
+            padding: 8px 40px 8px 35px;
+            border: 2px solid #E8F5E9;
+            border-radius: 25px;
+            font-size: 13px;
+            width: 280px;
+            transition: all 0.3s ease;
+            background: #F9FBE7;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+            width: 320px;
+            background: white;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            color: #4CAF50;
+            font-size: 16px;
+            pointer-events: none;
+        }
+
+        .clear-search {
+            position: absolute;
+            right: 10px;
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            padding: 5px;
+            display: none;
+            transition: all 0.2s ease;
+        }
+
+        .clear-search:hover {
+            color: #e74c3c;
+            transform: scale(1.1);
+        }
+
+        .search-input:not(:placeholder-shown) ~ .clear-search {
+            display: block;
         }
 
         .table-wrapper {
-            overflow-x: auto;
+            flex: 1;
+            overflow: auto;
+            margin: 0 -20px -20px -20px;
+            padding: 0 20px 20px 20px;
+        }
+
+        .table-wrapper::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: #4CAF50;
+            border-radius: 10px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb:hover {
+            background: #2E7D32;
         }
 
         .table {
             margin-bottom: 0;
+            font-size: 13px;
+        }
+
+        .table thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
         .table thead th {
@@ -176,50 +443,57 @@
             color: #2E7D32;
             font-weight: 600;
             border: none;
-            padding: 16px;
-            font-size: 14px;
+            padding: 12px 10px;
+            font-size: 12px;
             white-space: nowrap;
+            position: sticky;
+            top: 0;
         }
 
         .table tbody td {
-            padding: 16px;
+            padding: 10px;
             vertical-align: middle;
             border-bottom: 1px solid #f0f0f0;
-            font-size: 14px;
+            font-size: 12px;
         }
 
         .table tbody tr {
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .table tbody tr:hover {
             background: #F9FBE7;
-            transform: scale(1.01);
+        }
+
+        .table tbody tr.hidden {
+            display: none;
         }
 
         .btn-delete {
-            padding: 8px 16px;
+            padding: 6px 12px;
             background: linear-gradient(135deg, #e74c3c, #c0392b);
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 13px;
+            border-radius: 6px;
+            font-size: 11px;
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: 500;
-            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+            box-shadow: 0 2px 6px rgba(231, 76, 60, 0.3);
+            white-space: nowrap;
         }
 
         .btn-delete:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(231, 76, 60, 0.4);
         }
 
         .badge {
-            padding: 6px 14px;
-            border-radius: 8px;
-            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
             font-weight: 600;
+            white-space: nowrap;
         }
 
         .badge.bg-success {
@@ -235,11 +509,13 @@
         }
 
         .alert {
-            padding: 16px 20px;
-            border-radius: 12px;
-            margin-bottom: 25px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 15px;
             border: none;
             animation: slideDown 0.3s ease;
+            font-size: 13px;
+            flex-shrink: 0;
         }
 
         @keyframes slideDown {
@@ -256,63 +532,67 @@
         .alert-success {
             background: #E8F5E9;
             color: #2E7D32;
-            border-left: 4px solid #4CAF50;
+            border-left: 3px solid #4CAF50;
         }
 
         .alert-danger,
         .alert-error {
             background: #FFEBEE;
             color: #C62828;
-            border-left: 4px solid #e74c3c;
+            border-left: 3px solid #e74c3c;
         }
 
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
+            padding: 40px 20px;
             color: #999;
         }
 
         .empty-state i {
-            font-size: 64px;
+            font-size: 48px;
             color: #ddd;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .empty-state h4 {
-            font-size: 20px;
+            font-size: 16px;
             color: #666;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 13px;
         }
 
         .info-cell {
-            line-height: 1.6;
+            line-height: 1.4;
         }
 
         .info-cell small {
             display: block;
             color: #666;
+            font-size: 11px;
         }
 
         .contact-cell {
-            min-width: 200px;
+            min-width: 180px;
         }
 
         .company-name-cell {
             font-weight: 600;
             color: #333;
-            min-width: 150px;
+            min-width: 130px;
         }
 
         .id-badge {
             background: #E8F5E9;
             color: #2E7D32;
-            padding: 4px 10px;
-            border-radius: 6px;
+            padding: 3px 8px;
+            border-radius: 5px;
             font-weight: 600;
-            font-size: 13px;
+            font-size: 11px;
         }
 
-        /* Mobile Styles */
         @media (max-width: 768px) {
             .sidebar {
                 width: 0;
@@ -320,88 +600,117 @@
                 transform: translateX(-100%);
             }
 
+            .sidebar.show {
+                width: 220px;
+                padding: 15px 0;
+                transform: translateX(0);
+            }
+
+            .sidebar-toggle {
+                display: none;
+            }
+
             .main-content {
                 margin-left: 0;
-                padding: 15px;
+                padding: 10px;
+            }
+
+            .main-content.expanded {
+                margin-left: 0;
             }
 
             .top-bar {
                 flex-direction: column;
-                gap: 15px;
-                padding: 20px;
+                gap: 10px;
+                padding: 15px;
             }
 
             .top-bar h1 {
-                font-size: 24px;
+                font-size: 20px;
             }
 
             .content-section {
-                padding: 20px;
+                padding: 15px;
             }
 
             .section-header {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 15px;
+            }
+
+            .header-actions {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-container {
+                width: 100%;
+            }
+
+            .search-input {
+                width: 100%;
+            }
+
+            .search-input:focus {
+                width: 100%;
             }
 
             .table {
-                font-size: 12px;
+                font-size: 11px;
             }
 
             .table thead th,
             .table tbody td {
-                padding: 10px;
+                padding: 8px;
             }
         }
 
-        /* Mobile Toggle Button */
         .mobile-toggle {
             display: none;
             position: fixed;
-            top: 20px;
-            left: 20px;
+            top: 15px;
+            left: 15px;
             z-index: 1001;
             background: linear-gradient(135deg, #4CAF50, #2E7D32);
             color: white;
             border: none;
-            width: 45px;
-            height: 45px;
-            border-radius: 12px;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+            box-shadow: 0 3px 8px rgba(76, 175, 80, 0.3);
         }
 
         @media (max-width: 768px) {
             .mobile-toggle {
                 display: block;
             }
-
-            .sidebar.show {
-                transform: translateX(0);
-            }
         }
     </style>
 </head>
 <body>
-    <button class="mobile-toggle" onclick="toggleSidebar()">
+    <button class="mobile-toggle" onclick="toggleMobileSidebar()">
         <i class="bi bi-list"></i>
     </button>
 
     <div class="sidebar" id="sidebar">
+        <div class="sidebar-toggle" onclick="toggleSidebar()">
+            <i class="bi bi-chevron-left"></i>
+        </div>
         <div class="sidebar-header">
             <h2>PlacementPro</h2>
             <p>Admin Panel</p>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="{% url 'web:dashboard' %}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
-            <li><a href="{% url 'web:view_companies' %}" class="active"><i class="bi bi-building"></i> Companies</a></li>
-            <li><a href="{% url 'web:view_candidates' %}"><i class="bi bi-people-fill"></i> Candidates</a></li>
-            <li><a href="{% url 'web:logout' %}"><i class="bi bi-house-door"></i> Logout</a></li>
+            <li><a href="{% url 'web:dashboard' %}" data-tooltip="Dashboard"><i class="bi bi-speedometer2"></i> <span class="menu-text">Dashboard</span></a></li>
+            <li><a href="{% url 'web:view_companies' %}" class="active" data-tooltip="Companies"><i class="bi bi-building"></i> <span class="menu-text">Companies</span></a></li>
+            <li><a href="{% url 'web:view_candidates' %}" data-tooltip="Candidates"><i class="bi bi-people-fill"></i> <span class="menu-text">Candidates</span></a></li>
+            <li><a href="{% url 'web:logout' %}" data-tooltip="Logout"><i class="bi bi-box-arrow-right"></i> <span class="menu-text">Logout</span></a></li>
         </ul>
     </div>
 
-    <div class="main-content">
+    <div class="main-content" id="mainContent">
         {% if messages %}
             {% for message in messages %}
                 <div class="alert alert-{{ message.tags }}">
@@ -411,27 +720,36 @@
             {% endfor %}
         {% endif %}
 
-        
-
         <div class="content-section">
             <div class="section-header">
                 <h3>
                     <i class="bi bi-grid-fill"></i>
                     Company Database
                 </h3>
-                <div>
+                <div class="header-actions">
+                    <div class="search-container">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="text" 
+                               class="search-input" 
+                               id="searchInput" 
+                               placeholder="Search by company, position, location..." 
+                               autocomplete="off">
+                        <button class="clear-search" onclick="clearSearch()">
+                            <i class="bi bi-x-circle-fill"></i>
+                        </button>
+                    </div>
                     <span class="badge bg-success">
                         <i class="bi bi-building me-1"></i>
-                        Total: {{ companies.count }}
+                        Total: <span id="totalCount">{{ companies.count }}</span>
                     </span>
                 </div>
             </div>
 
             <div class="table-wrapper">
-                <table class="table table-hover">
+                <table class="table table-hover" id="companiesTable">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>No.</th>
                             <th>Company Name</th>
                             <th>Contact Person</th>
                             <th>Position</th>
@@ -445,8 +763,12 @@
                     </thead>
                     <tbody>
                         {% for company in companies %}
-                        <tr>
-                            <td><span class="id-badge">#{{ company.id }}</span></td>
+                        <tr data-company="{{ company.company_name|lower }}" 
+                            data-post="{{ company.post|lower }}" 
+                            data-location="{{ company.location|lower }}"
+                            data-person="{{ company.contact_person|lower }}"
+                            data-designation="{{ company.designation|lower }}">
+                            <td><span class="id-badge">{{ forloop.counter|add:companies.start_index|add:"-1" }}</span></td>
                             <td class="company-name-cell">{{ company.company_name }}</td>
                             <td class="info-cell">
                                 <small><i class="bi bi-person me-1"></i>{{ company.contact_person }}</small>
@@ -478,7 +800,7 @@
                             </td>
                         </tr>
                         {% empty %}
-                        <tr>
+                        <tr id="emptyRow">
                             <td colspan="10">
                                 <div class="empty-state">
                                     <i class="bi bi-building"></i>
@@ -490,17 +812,97 @@
                         {% endfor %}
                     </tbody>
                 </table>
+                <div id="noResults" style="display: none;">
+                    <div class="empty-state">
+                        <i class="bi bi-search"></i>
+                        <h4>No Results Found</h4>
+                        <p>No companies match your search criteria. Try a different search term.</p>
+                    </div>
+                </div>
             </div>
+
+            {% if companies.has_other_pages %}
+            <div class="pagination-wrapper">
+                <div class="page-info">
+                    Showing <strong>{{ companies.start_index }}</strong> to <strong>{{ companies.end_index }}</strong> of <strong>{{ companies.paginator.count }}</strong> companies
+                </div>
+                <nav aria-label="Companies pagination">
+                    <ul class="pagination">
+                        {% if companies.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1" aria-label="First">
+                                <i class="bi bi-chevron-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ companies.previous_page_number }}" aria-label="Previous">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link"><i class="bi bi-chevron-double-left"></i></span>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link"><i class="bi bi-chevron-left"></i></span>
+                        </li>
+                        {% endif %}
+
+                        {% for num in companies.paginator.page_range %}
+                            {% if companies.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                            {% elif num > companies.number|add:'-3' and num < companies.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if companies.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ companies.next_page_number }}" aria-label="Next">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ companies.paginator.num_pages }}" aria-label="Last">
+                                <i class="bi bi-chevron-double-right"></i>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link"><i class="bi bi-chevron-right"></i></span>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link"><i class="bi bi-chevron-double-right"></i></span>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+            
+            const isCollapsed = sidebar.classList.contains('collapsed');
+            localStorage.setItem('sidebarCollapsed', isCollapsed);
+        }
+
+        function toggleMobileSidebar() {
             document.getElementById('sidebar').classList.toggle('show');
         }
 
-        // Close sidebar when clicking outside on mobile
         document.addEventListener('click', function(event) {
             const sidebar = document.getElementById('sidebar');
             const toggle = document.querySelector('.mobile-toggle');
@@ -509,6 +911,87 @@
                 if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
                     sidebar.classList.remove('show');
                 }
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', function() {
+            const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (isCollapsed && window.innerWidth > 768) {
+                document.getElementById('sidebar').classList.add('collapsed');
+                document.getElementById('mainContent').classList.add('expanded');
+            }
+        });
+
+        // Real-time Search Functionality
+        const searchInput = document.getElementById('searchInput');
+        const table = document.getElementById('companiesTable');
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr:not(#emptyRow)'));
+        const noResults = document.getElementById('noResults');
+        const totalCount = document.getElementById('totalCount');
+        const emptyRow = document.getElementById('emptyRow');
+
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            if (searchTerm === '') {
+                // Show all rows
+                rows.forEach(row => {
+                    row.classList.remove('hidden');
+                    visibleCount++;
+                });
+                noResults.style.display = 'none';
+            } else {
+                // Filter rows
+                rows.forEach(row => {
+                    const company = row.getAttribute('data-company') || '';
+                    const post = row.getAttribute('data-post') || '';
+                    const location = row.getAttribute('data-location') || '';
+                    const person = row.getAttribute('data-person') || '';
+                    const designation = row.getAttribute('data-designation') || '';
+
+                    const matchFound = company.includes(searchTerm) || 
+                                     post.includes(searchTerm) || 
+                                     location.includes(searchTerm) ||
+                                     person.includes(searchTerm) ||
+                                     designation.includes(searchTerm);
+
+                    if (matchFound) {
+                        row.classList.remove('hidden');
+                        visibleCount++;
+                    } else {
+                        row.classList.add('hidden');
+                    }
+                });
+
+                // Show/hide no results message
+                if (visibleCount === 0) {
+                    noResults.style.display = 'block';
+                } else {
+                    noResults.style.display = 'none';
+                }
+            }
+
+            // Hide empty row if exists
+            if (emptyRow) {
+                emptyRow.style.display = 'none';
+            }
+
+            // Update count
+            totalCount.textContent = visibleCount;
+        });
+
+        function clearSearch() {
+            searchInput.value = '';
+            searchInput.dispatchEvent(new Event('input'));
+            searchInput.focus();
+        }
+
+        // Handle enter key
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
             }
         });
     </script>

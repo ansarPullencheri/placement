@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import json
 from .models import UserProfile, CompanyRegistration, CandidateRegistration
 
@@ -21,7 +22,7 @@ def candidate(request):
 def user_login(request):
     # If user is already authenticated
     if request.user.is_authenticated:
-        profile = getattr(request.user, 'profile', None)  # Safe way to get profile
+        profile = getattr(request.user, 'profile', None)
         if profile and profile.user_type == 'admin':
             return redirect('web:dashboard')
         else:
@@ -44,32 +45,6 @@ def user_login(request):
                 return redirect('web:dashboard')
             else:
                 messages.error(request, 'Access denied. Admin login only.')
-                return redirect('web:login')
-        else:
-            messages.error(request, 'Invalid username or password.')
-    
-    # Default: render login page
-    return render(request, 'web/login.html')
-
-    
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        
-        user = authenticate(request, username=username, password=password)
-        
-        if user is not None:
-            try:
-                profile = user.profile
-                if profile.user_type == 'admin':
-                    login(request, user)
-                    messages.success(request, 'Welcome Admin!')
-                    return redirect('web:dashboard')
-                else:
-                    messages.error(request, 'Access denied. Admin login only.')
-                    return redirect('web:login')
-            except UserProfile.DoesNotExist:
-                messages.error(request, 'User profile not found.')
                 return redirect('web:login')
         else:
             messages.error(request, 'Invalid username or password.')
@@ -187,7 +162,7 @@ def submit_candidate_registration(request):
         'message': 'Invalid request method'
     }, status=400)
 
-# ------------------ Admin Management Views ------------------
+# ------------------ Admin Management Views with Pagination ------------------
 
 @login_required
 def view_companies(request):
@@ -195,7 +170,19 @@ def view_companies(request):
         messages.error(request, 'Access denied. Admin only.')
         return redirect('web:main')
     
-    companies = CompanyRegistration.objects.all().order_by('-created_at')
+    companies_list = CompanyRegistration.objects.all().order_by('-created_at')
+    
+    # Pagination - 10 items per page
+    paginator = Paginator(companies_list, 10)
+    page = request.GET.get('page', 1)
+    
+    try:
+        companies = paginator.page(page)
+    except PageNotAnInteger:
+        companies = paginator.page(1)
+    except EmptyPage:
+        companies = paginator.page(paginator.num_pages)
+    
     return render(request, 'web/view_companies.html', {'companies': companies})
 
 @login_required
@@ -204,7 +191,19 @@ def view_candidates(request):
         messages.error(request, 'Access denied. Admin only.')
         return redirect('web:main')
     
-    candidates = CandidateRegistration.objects.all().order_by('-created_at')
+    candidates_list = CandidateRegistration.objects.all().order_by('-created_at')
+    
+    # Pagination - 10 items per page
+    paginator = Paginator(candidates_list, 10)
+    page = request.GET.get('page', 1)
+    
+    try:
+        candidates = paginator.page(page)
+    except PageNotAnInteger:
+        candidates = paginator.page(1)
+    except EmptyPage:
+        candidates = paginator.page(paginator.num_pages)
+    
     return render(request, 'web/view_candidates.html', {'candidates': candidates})
 
 @login_required
@@ -234,5 +233,27 @@ def delete_candidate(request, candidate_id):
         messages.success(request, 'Candidate deleted successfully.')
     except CandidateRegistration.DoesNotExist:
         messages.error(request, 'Candidate not found.')
+    
+    return redirect('web:view_candidates')
+
+@login_required
+def update_candidate_status(request, candidate_id):
+    if request.user.profile.user_type != 'admin':
+        messages.error(request, 'Access denied.')
+        return redirect('web:main')
+    
+    if request.method == 'POST':
+        try:
+            candidate = CandidateRegistration.objects.get(id=candidate_id)
+            new_status = request.POST.get('status')
+            
+            if new_status in ['pending', 'selected', 'rejected']:
+                candidate.status = new_status
+                candidate.save()
+                messages.success(request, f'Candidate status updated to {new_status.title()}.')
+            else:
+                messages.error(request, 'Invalid status value.')
+        except CandidateRegistration.DoesNotExist:
+            messages.error(request, 'Candidate not found.')
     
     return redirect('web:view_candidates')
